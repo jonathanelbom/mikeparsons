@@ -1,0 +1,139 @@
+// settings - includes all $variables (colors, etc), @mixin, @function, and @media
+@import 'settings';
+
+$margin: 2px;
+$width: 150px;
+$cirlce-width: 120px;
+$border-weight: 3px;
+
+
+html, body {
+	font-family: 'Open Sans', sans-serif;
+	background-color: #111;
+}
+body {
+  background-attachment: fixed;
+  background-image: url('../img/bg.png');
+  background-repeat: repeat;
+  background-position: center;
+}
+.modal {
+	background-color: rgba(0,0,0, 0.8);
+	display: block;
+}
+.section {
+	display:inline;
+}
+main {
+	padding-top: 70px;
+}
+.nav > li > a.nav-item {
+	box-sizing: border-box;
+	color: $blue;
+	text-transform: uppercase;
+	border-left: 1px solid transparent;
+	border-right: 1px solid transparent;
+	&:hover, &:active, &:focus {
+		background-color: $blue;
+		color: #000;
+		&:hover {
+			border-left: 1px solid #000;
+			border-right: 1px solid #000;
+		}
+
+
+	}
+}
+.modal-controls {
+	background-color: $blue;
+	display:inline-block;
+	//padding: 5px 5px;
+	position: fixed;
+	bottom: 35%;
+	right:0px;
+	@include border-radius( 6px 0 0 6px );
+	i {
+		color: #000;
+		font-size: 40px;
+		padding: 7px 7px;
+		display: block;
+		&:nth-child(1) {
+			padding-bottom: 2px;
+		}
+		&:nth-child(2) {
+			padding-top: 2px;
+		}
+		&:nth-child(3) {
+			border-top: 2px solid #000;
+		}
+	}
+}
+.section-photos {
+	margin: 0 0 10px 0;
+	padding: 0;
+	display:inline;
+}
+.icon-bar {
+	background-color: $blue;
+}
+.section-header {
+	background-color: #000;
+	text-transform: uppercase;
+	display: inline-block;
+	padding: 1px 6px;
+	box-sizing: border-box;
+	width: $width;
+	margin-right: $margin;
+	line-height: $width;
+  	text-align: center;
+	span {
+		position: relative;
+		@include calc( line-height, '#{$width} - #{$margin}' );
+		background-color: $blue;
+		display: inline-block;
+		@include border-radius( $cirlce-width );
+		line-height: $cirlce-width;
+		width: $cirlce-width;
+		font-weight: 600;
+		font-size: 16px;
+		letter-spacing: -1px;
+		
+		&:after {
+		  @include border-radius( $cirlce-width );
+		  content: '';
+		  position: absolute;
+		  @include calc( width, '#{$cirlce-width} - #{$border-weight} * 2' );
+		  @include calc( height, '#{$cirlce-width} - #{$border-weight} * 2' );
+		  border: $border-weight solid #000;
+		  left: $border-weight;
+		  top: $border-weight;
+		}
+	}
+}
+.thumb {
+	margin-bottom: $margin;
+	margin-right: $margin;
+	width: $width;
+	height: $width;
+}
+.navbar-fixed-top {
+	background-color: #000;
+	border-bottom: 2px solid $blue;
+	@include box-shadow( 0 1px 5px 0 rgba(0,0,0,0.5) );
+}
+.logo {
+	margin: 5px 0 0 0;
+	font-weight: 800;
+	font-size:30px;
+	line-height:30px;
+	letter-spacing: -2px;
+	span {
+		vertical-align: middle;
+	}
+	span:first-child {
+		color: #ccc;
+	}
+	span:last-child {
+		color: $blue;
+	}
+}

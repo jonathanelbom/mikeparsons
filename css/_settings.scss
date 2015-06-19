@@ -1,0 +1,66 @@
+$blue: #00C7FF;
+
+@mixin gradient($color-top, $color-bottom) {
+    background: $color-bottom;
+    background: -moz-linear-gradient(top,  $color-top 0%, $color-bottom 100%);
+    background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,$color-top), color-stop(100%,$color-bottom));
+    background: -webkit-linear-gradient(top,  $color-top 0%,$color-bottom 100%);
+    background: -o-linear-gradient(top,  $color-top 0%,$color-bottom 100%);
+    background: -ms-linear-gradient(top,  $color-top 0%,$color-bottom 100%);
+    background: linear-gradient(to bottom,  $color-top 0%,$color-bottom 100%);
+    filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='$color-top', endColorstr='$color-bottom',GradientType=0 );
+}
+@mixin border-radius($radius) {
+    -webkit-border-radius: $radius;
+    -moz-border-radius: $radius;
+    -ms-border-radius: $radius;
+    border-radius: $radius;
+}
+@mixin vertical-align {
+  position: relative;
+  top: 50%;
+  -webkit-transform: translateY(-50%);
+  -ms-transform: translateY(-50%);
+  transform: translateY(-50%);
+}
+@mixin preserve-3d {
+  -webkit-transform-style: preserve-3d;
+  -moz-transform-style: preserve-3d;
+  transform-style: preserve-3d;
+}
+@mixin transition-property($transition-property) {
+    -webkit-transition-property: $transition-property;
+    -moz-transition-property: $transition-property;
+    -o-transition-property: $transition-property;
+    transition-property: $transition-property;
+}
+@mixin transition-duration($transition-duration) {
+    -webkit-transition-duration: $transition-duration;
+    -moz-transition-duration: $transition-duration;
+    -o-transition-duration: $transition-duration;
+    transition-duration: $transition-duration;
+}
+@mixin transition-timing-function($transition-timing-function) {
+    -webkit-transition-timing-function: $transition-timing-function;
+    -moz-transition-timing-function: $transition-timing-function;
+    -o-transition-timing-function: $transition-timing-function;
+    transition-timing-function: $transition-timing-function;
+}
+@mixin box-shadow( $shadow ) {
+    -webkit-box-shadow: $shadow;
+    box-shadow: $shadow;
+}
+@mixin calc($property, $expression) {
+  #{$property}: -moz-calc(#{$expression});
+  #{$property}: -webkit-calc(#{$expression});
+  #{$property}: calc(#{$expression});
+}
+@mixin clear-float () {
+    &:after {
+      content: ".";
+       visibility: hidden;
+       display: block;
+       height: 0;
+       clear: both;
+    }
+}
