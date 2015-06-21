@@ -4,16 +4,22 @@
 	var username = "jonnybomb";
 	var user_id;
 	var photosets = {};
+	var photos = {};
 	var templates = {
 		section: '<section class="section"><header class="section-header"><span></span></header><ul class="section-photos"></ul></section>',
 		thumb: '<img class="thumb"></img>',
 		navitem: '<li><a href="#" class="nav-item"></a></li>'
 	};
-	var $main = $('main')
+	var $main = $('main');
+	var $modal = $('.modal');
+	var $modalControls = $('.modal-controls');
+	var $fullsize = $('.full-size');
+	var $loader = $('.loader');
+	var $body = $('body');
+	var photos;
+	var photo;
+	var mainIsFluid = false;//$main.hasClass('contianer-fluid');
 
-	//get user id and kickoff site
-	getUserId("mikedparsons");
-	
 	/*  photo sizes
 	s	small square 75x75
 	q	large square 150x150
@@ -27,26 +33,137 @@
 	h	large 1600, 1600 on longest side†
 	k	large 2048, 2048 on longest side†
 	*/
+
+	//get user id and kickoff site
+	getUserId("mikedparsons");
+	// define input event
+	var mouseEvent = 'click';
+	// on full size iamge loaded
+	$fullsize.on('load', function() {
+		console.log('$fullsize onLoaded, width:',$fullsize.width());
+		$fullsize.removeClass('loading');
+		$loader.hide();
+	});
+	// on nav link click
+	$('header').on( mouseEvent, '.nav-item', function() {
+		$('.nav-item').removeClass('selected');
+		var id = $(this).addClass('selected').data('sectionId');
+		if ( id === 'all' ){
+			$('.section').show();
+		} else {
+			var $section = $('#section-'+id);
+			$('.section').hide();
+			$section.show();
+		}
+		console.log('$(this):',$(this));
+	});
+	// modal controls position
+	var height = $modalControls.outerHeight();
+	$modalControls.css('top', 'calc(50% - '+height/2+'px)');
+	// modal controls handlers
+	$('.modal .js-next').on( mouseEvent , function() {
+		showFullImage( findNextPhotoFromSet() );
+	});
+	$('.modal .js-prev').on( mouseEvent , function() {
+		showFullImage( findPrevPhotoFromSet() );
+	});
+	$('.modal .js-close').on( mouseEvent , function() {
+		$body.removeClass('modal-shown');
+		$modal.hide();
+		$fullsize.attr( 'src', '' );
+	});
+
+	// thumbs handler
+	$main.on( mouseEvent, '.thumb', function() {
+		showFullImage( findPhotoFromSet( $(this).data('photoId'), $(this).data('photosetId') ) );
+	})
+
+	// modal controls
+	$main.on( mouseEvent, '.thumb', function() {
+		//showFullImage( $(this).data('id') );
+	})
+
+	$(window).on('resize', function() {
+	});
+
+	function getImageSize() {
+		var vp = getViewportSize();
+		var w = vp.width;
+		var h = vp.height;
+		var side = Math.max( w, h);
+		var size;
+		if ( side > 2048 ) {
+			size = 'k';
+		} else if ( side > 1600 ) {
+			size = 'h';
+		} else if ( side > 1024 ) {
+			size = 'b';
+		} else if ( side > 800 ) {
+			size = 'c';
+		} else if ( side > 640 ) {
+			size = 'z';
+		} else if ( side > 500 ) {
+			size = '-';
+		} else if ( side > 320 ) {
+			size = 'n';
+		} else {
+			size = 'm';
+		}
+		console.log('getImageSize, w:',w,', h:',h,', side:',side ,' size:',size);
+		return 'b';
+	}
+
+	function showFullImage( photo ) {
+		//console.log('showFullImage, width:',size.width,', height:',size.height,', photo:',photo,', photo.id:',photo.id );
+		var url =  getImgSrc( photo.farm, photo.server, photo.id, photo.secret, getImageSize() );
+		$fullsize.addClass('loading');
+		$loader.show();
+		$fullsize.attr( 'src', url );
+		$modal.show();
+		$modal.css('visibility', 'visible');
+		$body.addClass('modal-shown');
+	}
+
+	function findPhotoFromSet( photoId, photosetId ) {
+		photos = photosets[ photosetId ].photoset.photo;
+		photo = _.findWhere( photos, {id: photoId.toString()} );
+		return photo;
+	}
+
+	function findNextPhotoFromSet() {
+		var idx = photos.indexOf( photo );
+		idx = idx === photos.length - 1 ? 0 : idx + 1;
+		photo = photos[ idx ];
+		return photo;
+	}
+
+	function findPrevPhotoFromSet() {
+		var idx = photos.indexOf( photo );
+		idx = idx ===  0 ? photos.length - 1 : idx - 1;
+		photo = photos[ idx ];
+		return photo;
+	}
+
 	function getImgSrc( farm, server, id, secret, size) {
 		return 'http://farm' + farm + '.static.flickr.com/' + server + '/' + id + '_' + secret + '_' + size + '.jpg';
 	}
 
+	function getViewportSize() {
+		return { width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0), height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0) };
+	}
 	// when individual photoset is return from flickr
 	function onGetPhotoset(data) {
 		//console.log('onGetPhotoset, data:', data);
 		var photoset = data.photoset;
-		photosets[ data.photoset.id ].photoset = photoset; 
-		var photos = [];
+		photosets[ photoset.id ].photoset = photoset;
 		$.each( data.photoset.photo, function (index, photo) {
 			// square thumb url
 			var url = getImgSrc( photo.farm, photo.server, photo.id, photo.secret, 'q');	
-			console.log('url:',url);
-			$( templates.thumb.concat() )
-				//.appendTo( $main )
+			var $thumb = $( templates.thumb.concat() )
 				.appendTo( '#section-' + photoset.id +' > ul' )
-				.attr( 'src', url );
-			photos.push( photo );
+				.attr( {'src': url, 'data-photo-id': photo.id, 'data-photoset-id': data.photoset.id} );
 		});
+
 		/*
 		var photosetId = data.photoset.id
 		FP.photosets[photosetId] = new Array();
@@ -78,23 +195,19 @@
 			// add the section nav item
 			$( templates.navitem.concat() )
 				.appendTo( $nav )
-				.attr( 'id', 'nav-'+this.id )
 				.find('a')
+				.attr( 'data-section-id', this.id )
 				.text( this.title._content );
 			// get photoset for individual photo info
 			getPhotoset(this.id);	
 		});
+
+		// click all
+		$('a[data-section-id="all"]')[mouseEvent]();
+		/*
 		setTimeout( function() {
 			console.log('photosets:',photosets);
 		}, 3000);
-		//
-		/*
-		FP.photosets = new Object();
-		$.each(data.photosets.photoset, createPhotoset);
-		div = $("<a class='headerLink modalCloser' href='javascript:void(0)'>All</a>").appendTo("#nav");
-		$('body').css('min-width', FP.headerContentWidth);
-		$('#nav').css('min-width', FP.headerContentWidth);
-		div.bind("mousedown", {div: {id:'All'}}, function(event){ viewPhotoset(event.data); });
 		*/
 	}
 	// when a user id is returned from flickr
@@ -117,9 +230,7 @@
 			onGetPhotosets
 	    );
 	}
-
 	function getUserId(name) {
-		//trace("getUserId");
 		$.getJSON(
 			api_url,
 			{ 	method : "flickr.people.findByUsername",
@@ -130,9 +241,7 @@
 			onGetUserId
 	    );
 	}
-
 	function getPhotoset(photosetID) {
-		//trace("getPhotos, photosetID:"+photosetID);
 		$.getJSON(
 			api_url,
 			{ 	method : "flickr.photosets.getPhotos",
@@ -144,29 +253,4 @@
 			onGetPhotoset
 	    );
 	}
-	/*
-	function onGetPhotosets(data)
-	{
-		trace("generic onGetPhotosets");
-		traceObject(data);
-	}
-
-	function onGetUserId(data)
-	{
-		trace("generic onGetUserId");
-		traceObject(data);
-	}
-	*/
-	/*
-	function getPhotosetsFromGetScript() {
-		trace("getPhotosetsFromGetScript");
-		$.getScript(api_url_full);
-	}
-	function jsonFlickrApi(rsp) {
-	    trace("jsonFlickrApi")
-	    if (rsp.stat != "ok") return;
-	    if (rsp.photosets) traceObject(rsp.photosets);
-	    else if (rsp.photoset) flickr_photoset(rsp.photoset);
-	}
-	*/
 })();

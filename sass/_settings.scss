@@ -28,6 +28,12 @@ $blue: #00C7FF;
   -moz-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
+@mixin animation($animation) {
+    -moz-animation:$animation;
+    -webkit-animation:$animation;
+    -ms-animation:$animation;
+    animation:$animation;
+}
 @mixin transition-property($transition-property) {
     -webkit-transition-property: $transition-property;
     -moz-transition-property: $transition-property;
