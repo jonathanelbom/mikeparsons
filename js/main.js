@@ -24,7 +24,7 @@
 	//get user id and kickoff site
 	getUserId("mikedparsons");
 	// define input event
-	var mouseEvent = 'click';
+	var mouseEvent = Modernizr.touch ? 'touchstart' : 'mousedown';
 	// on full size iamge loaded
 	$fullsize.on('load', function() {
 		$fullsize.removeClass('loading');
@@ -45,7 +45,7 @@
 		}
 		$('.navbar-collapse').removeClass('in');
 	});
-	
+
 	// modal controls position
 	var height = $modalControls.outerHeight();
 	$modalControls.css('top', 'calc(50% - '+height/2+'px)');
