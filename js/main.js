@@ -14,25 +14,12 @@
 	var $modal = $('.modal');
 	var $modalControls = $('.modal-controls');
 	var $fullsize = $('.full-size');
+	var $descr = $('.descr');
 	var $loader = $('.loader');
 	var $body = $('body');
 	var photos;
 	var photo;
 	var mainIsFluid = false;//$main.hasClass('contianer-fluid');
-
-	/*  photo sizes
-	s	small square 75x75
-	q	large square 150x150
-	t	thumbnail, 100 on longest side
-	m	small, 240 on longest side
-	n	small, 320 on longest side
-	-	medium, 500 on longest side
-	z	medium 640, 640 on longest side
-	c	medium 800, 800 on longest side†
-	b	large, 1024 on longest side*
-	h	large 1600, 1600 on longest side†
-	k	large 2048, 2048 on longest side†
-	*/
 
 	//get user id and kickoff site
 	getUserId("mikedparsons");
@@ -40,10 +27,11 @@
 	var mouseEvent = 'click';
 	// on full size iamge loaded
 	$fullsize.on('load', function() {
-		console.log('$fullsize onLoaded, width:',$fullsize.width());
 		$fullsize.removeClass('loading');
+		$descr.removeClass('loading');
 		$loader.hide();
 	});
+
 	// on nav link click
 	$('header').on( mouseEvent, '.nav-item', function() {
 		$('.nav-item').removeClass('selected');
@@ -55,8 +43,9 @@
 			$('.section').hide();
 			$section.show();
 		}
-		console.log('$(this):',$(this));
+		$('.navbar-collapse').removeClass('in');
 	});
+	
 	// modal controls position
 	var height = $modalControls.outerHeight();
 	$modalControls.css('top', 'calc(50% - '+height/2+'px)');
@@ -78,13 +67,19 @@
 		showFullImage( findPhotoFromSet( $(this).data('photoId'), $(this).data('photosetId') ) );
 	})
 
-	// modal controls
-	$main.on( mouseEvent, '.thumb', function() {
-		//showFullImage( $(this).data('id') );
-	})
-
-	$(window).on('resize', function() {
-	});
+	/*  photo sizes
+	s	small square 75x75
+	q	large square 150x150
+	t	thumbnail, 100 on longest side
+	m	small, 240 on longest side
+	n	small, 320 on longest side
+	-	medium, 500 on longest side
+	z	medium 640, 640 on longest side
+	c	medium 800, 800 on longest side†
+	b	large, 1024 on longest side*
+	h	large 1600, 1600 on longest side†
+	k	large 2048, 2048 on longest side†
+	*/
 
 	function getImageSize() {
 		var vp = getViewportSize();
@@ -92,31 +87,34 @@
 		var h = vp.height;
 		var side = Math.max( w, h);
 		var size;
-		if ( side > 2048 ) {
-			size = 'k';
-		} else if ( side > 1600 ) {
-			size = 'h';
-		} else if ( side > 1024 ) {
-			size = 'b';
-		} else if ( side > 800 ) {
-			size = 'c';
-		} else if ( side > 640 ) {
-			size = 'z';
-		} else if ( side > 500 ) {
-			size = '-';
-		} else if ( side > 320 ) {
-			size = 'n';
-		} else {
+		if (side <= 240 ) {
 			size = 'm';
+		} else if ( side <= 320 ) {
+			size = 'n';
+		} else if ( side <= 500 ) {
+			size = '-';
+		} else if ( side <= 640 ) {
+			size = 'z';
+		// } else if ( side <= 800 ) {
+		// 	size = 'c';
+		} else { //if ( side <= 1024 ) {
+			size = 'b';
 		}
+		// } else if ( side <= 1600 ) {
+		// 	size = 'h';
+		// } else {
+		// 	size = 'k';
+		// }
 		console.log('getImageSize, w:',w,', h:',h,', side:',side ,' size:',size);
-		return 'b';
+		return size;
 	}
 
 	function showFullImage( photo ) {
 		//console.log('showFullImage, width:',size.width,', height:',size.height,', photo:',photo,', photo.id:',photo.id );
 		var url =  getImgSrc( photo.farm, photo.server, photo.id, photo.secret, getImageSize() );
 		$fullsize.addClass('loading');
+		$descr.addClass('loading').find('span').text( photo.title );
+
 		$loader.show();
 		$fullsize.attr( 'src', url );
 		$modal.show();
@@ -161,6 +159,9 @@
 			var url = getImgSrc( photo.farm, photo.server, photo.id, photo.secret, 'q');	
 			var $thumb = $( templates.thumb.concat() )
 				.appendTo( '#section-' + photoset.id +' > ul' )
+				.on('error', function() {
+					console.log('image error');
+				})
 				.attr( {'src': url, 'data-photo-id': photo.id, 'data-photoset-id': data.photoset.id} );
 		});
 
@@ -204,11 +205,6 @@
 
 		// click all
 		$('a[data-section-id="all"]')[mouseEvent]();
-		/*
-		setTimeout( function() {
-			console.log('photosets:',photosets);
-		}, 3000);
-		*/
 	}
 	// when a user id is returned from flickr
 	function onGetUserId(data) {
@@ -218,7 +214,6 @@
 	}
 
 	function getPhotosets() {
-		console.log("getPhotosets");
 		$.getJSON(
 			api_url,
 			{ 	method : "flickr.photosets.getList",
