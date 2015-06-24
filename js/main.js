@@ -20,11 +20,12 @@
 	var photos;
 	var photo;
 	var mainIsFluid = false;//$main.hasClass('contianer-fluid');
+	var scrolling = false;
 
 	//get user id and kickoff site
 	getUserId("mikedparsons");
 	// define input event
-	var mouseEvent = Modernizr.touch ? 'touchstart' : 'mousedown';
+	var mouseEvent = Modernizr.touch ? 'touchend' : 'click';
 	// on full size iamge loaded
 	$fullsize.on('load', function() {
 		$fullsize.removeClass('loading');
@@ -43,6 +44,7 @@
 			$('.section').hide();
 			$section.show();
 		}
+		$('body').scrollTop( 0 );
 		$('.navbar-collapse').removeClass('in');
 	});
 
@@ -64,9 +66,14 @@
 
 	// thumbs handler
 	$main.on( mouseEvent, '.thumb', function() {
-		showFullImage( findPhotoFromSet( $(this).data('photoId'), $(this).data('photosetId') ) );
-	})
-
+		if ( !scrolling ) {
+			showFullImage( findPhotoFromSet( $(this).data('photoId'), $(this).data('photosetId') ) );
+		}
+		scrolling = false;
+	}).on( 'touchmove', '.thumb', function() {
+		scrolling = true;
+	});
+	
 	/*  photo sizes
 	s	small square 75x75
 	q	large square 150x150
@@ -105,7 +112,7 @@
 		// } else {
 		// 	size = 'k';
 		// }
-		console.log('getImageSize, w:',w,', h:',h,', side:',side ,' size:',size);
+		//console.log('getImageSize, w:',w,', h:',h,', side:',side ,' size:',size);
 		return size;
 	}
 
@@ -164,22 +171,6 @@
 				})
 				.attr( {'src': url, 'data-photo-id': photo.id, 'data-photoset-id': data.photoset.id} );
 		});
-
-		/*
-		var photosetId = data.photoset.id
-		FP.photosets[photosetId] = new Array();
-		for (var i=0; i<data.photoset.photo.length; i++)
-		{
-			var photoData = data.photoset.photo[i];
-			photoData.photosetId = photosetId;
-			var divId = "#thumbs_"+photosetId;
-			var url = 'http://farm' + photoData.farm + '.static.flickr.com/' + photoData.server + '/' + photoData.id + '_' + photoData.secret + "_s" + '.jpg';	
-			thumb = $("<img class='thumb'/>").appendTo(divId);
-			thumb.attr("src", url); 
-			thumb.bind("mousedown", {photo: photoData}, function(event){ loadFullImage(event.data.photo); });
-			FP.photosets[photosetId].push(photoData);
-		}
-		*/
 	}
 	// when all of a user's photosets are return from flickr
 	function onGetPhotosets(data) {
@@ -204,11 +195,11 @@
 		});
 
 		// click all
-		$('a[data-section-id="all"]')[mouseEvent]();
+		$('a[data-section-id="all"]').trigger( mouseEvent );
 	}
 	// when a user id is returned from flickr
 	function onGetUserId(data) {
-		console.log('onGetUserId, data:', data);
+		//console.log('onGetUserId, data:', data);
 		user_id = data.user.nsid;
 		getPhotosets();
 	}

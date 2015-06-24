@@ -23,6 +23,9 @@ $border-weight: 3px;
   100% { transform:rotate(360deg); }
 }
 
+#nav-scroll.navbar-collapse.in {
+	max-height:270px;
+}
 .spinner {
 	display: inline-block;
     $side: 40px;
