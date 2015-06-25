@@ -309,22 +309,45 @@ main.thumbs {
 }
 
 /* line 227, ../sass/main.scss */
+.email {
+  margin-left: 15px;
+  display: inline-block;
+  font-size: 25px;
+  position: relative;
+  top: 3px;
+  cursor: pointer;
+  color: #444;
+}
+/* line 235, ../sass/main.scss */
+.email:hover {
+  color: #00C7FF;
+}
+
+/* line 239, ../sass/main.scss */
 .logo {
   margin: 5px 0 0 0;
   font-weight: 800;
   font-size: 30px;
   line-height: 30px;
   letter-spacing: -2px;
+  display: inline-block;
 }
-/* line 233, ../sass/main.scss */
+/* line 246, ../sass/main.scss */
 .logo span {
   vertical-align: middle;
 }
-/* line 236, ../sass/main.scss */
+/* line 249, ../sass/main.scss */
 .logo span:first-child {
   color: #ccc;
 }
-/* line 239, ../sass/main.scss */
+/* line 252, ../sass/main.scss */
 .logo span:last-child {
   color: #00C7FF;
+}
+
+@media (max-width: 767px) {
+  /* line 258, ../sass/main.scss */
+  .logo {
+    margin-left: 10px;
+  }
 }

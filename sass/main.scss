@@ -66,7 +66,7 @@ body {
 	> span {
 		display:inline-block;
 		background-color: #000;//rgba(0,0,0,0.5);
-		color: $blue;	
+		color: $blue;
 		padding: 5px;
 		font-size: 16px;
 		font-weight: 300;
@@ -191,7 +191,7 @@ main.thumbs {
 		font-weight: 600;
 		font-size: 16px;
 		letter-spacing: -1px;
-		
+
 		&:after {
 		  @include border-radius( $cirlce-width );
 		  content: '';
@@ -224,12 +224,25 @@ main.thumbs {
 	border-bottom: 2px solid $blue;
 	@include box-shadow( 0 1px 5px 0 rgba(0,0,0,0.5) );
 }
+.email {
+	margin-left: 15px;
+	display: inline-block;
+	font-size: 25px;
+	position:relative;
+	top: 3px;
+	cursor:pointer;
+	color: #444;
+	&:hover {
+		color: $blue;
+	}
+}
 .logo {
 	margin: 5px 0 0 0;
 	font-weight: 800;
 	font-size:30px;
 	line-height:30px;
 	letter-spacing: -2px;
+	display:inline-block;
 	span {
 		vertical-align: middle;
 	}
@@ -239,4 +252,10 @@ main.thumbs {
 	span:last-child {
 		color: $blue;
 	}
+}
+
+@media (max-width: 767px) {
+  .logo {
+    margin-left: 10px;
+  }
 }
