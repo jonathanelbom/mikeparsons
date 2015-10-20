@@ -8,42 +8,47 @@
         <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=0">
         <link rel="shortcut icon" href="/favicon.ico" type="image/x-icon">
         <link rel="icon" href="/favicon.ico" type="image/x-icon">
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css">
+        <!-- link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/3.0.3/normalize.min.css"> -->
        	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
        	<link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/font-awesome/4.3.0/css/font-awesome.min.css">
+        <link rel="stylesheet" href="libs/justifiedGallery/justifiedGallery.min.css" />
        	<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600,700,800' rel='stylesheet' type='text/css'>
        	<link rel="stylesheet" href="css/main.css">
        	<script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-
     </head>
+    <style>
+        body {
+            background-color: #333;
+        }
+    </style>
     <body>
     	<!-- Header -->
     	<header class="navbar navbar-fixed-top main-nav" id="top" role="banner">
-				<hgroup class="container">
-					<div class="navbar-header">
-						<button class="navbar-toggle collapsed" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
-						<span class="sr-only">Toggle navigation</span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						<span class="icon-bar"></span>
-						</button>
-						<h1 class="logo">
-							<span>Mike</span><span>Parsons</span>
-						</h1>
-                        <a href="mailto:mikep512@yahoo.com"><i class="email fa fa-envelope"></i></a>
-					</div>
-					<nav id="nav-scroll" class="collapse navbar-collapse bs-navbar-collapse">
-						<ul class="nav navbar-nav navbar-right">
-							<li><a href="#" class="nav-item" data-section-id="all">all</a></li>
-						</ul>
-					</nav>
-				</hgroup>
-			</header>
+			<hgroup class="container">
+				<div class="navbar-header">
+					<button class="navbar-toggle" type="button" data-toggle="collapse" data-target=".bs-navbar-collapse">
+    					<span class="sr-only">Toggle navigation</span>
+    					<i class="fa fa-pencil nav-i"></i>
+                        <i class="fa fa-paint-brush nav-i"></i>
+                        <i class="fa fa-cubes nav-i"></i>
+					</button>
+					<h1 class="logo">
+						<span>Mike</span><span>Parsons</span>
+					</h1>
+                    <a href="mailto:mikep512@yahoo.com"><i class="email fa fa-envelope"></i></a>
+				</div>
+				<nav id="nav-scroll" class="collapse navbar-collapse bs-navbar-collapse">
+					<ul class="nav navbar-nav navbar-right">
+						<!-- <li><a href="#" class="nav-item" data-section-id="all">all</a></li> -->
+					</ul>
+				</nav>
+			</hgroup>
+		</header>
 
 		<!-- Content -->
-    	<main class="container thumbs">
+    	<main class="container-fluid thumbs">
     	</main>
-    	<div class="modal">
+    	<!-- <div class="modal">
             <img class="full-size" src="">
             <div class="descr"><span>sample description text</span></div>
     		<div class="modal-controls">
@@ -55,10 +60,12 @@
             <div class="loader">
                 <div class="spinner"></div>
             </div>
-    	</div>
+    	</div> -->
     	<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
+        <script src="libs/justifiedGallery/jquery.justifiedGallery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
         <script src="https://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.8.3/underscore-min.js"></script>
+
         <script src="js/main.js"></script>
     </body>
 </html>

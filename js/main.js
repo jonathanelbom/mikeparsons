@@ -6,7 +6,9 @@
 	var photosets = {};
 	var photos = {};
 	var templates = {
-		section: '<section class="section"><header class="section-header"><span></span></header><ul class="section-photos"></ul></section>',
+		//section: '<section class="section"><header class="section-header"><span></span></header><ul class="section-photos"></ul></section>',
+		//section: '<section class="section"><ul class="section-photos"></ul></section>',
+		section: '<section class="section"></section>',
 		thumb: '<img class="thumb"></img>',
 		navitem: '<li><a href="#" class="nav-item"></a></li>'
 	};
@@ -19,8 +21,13 @@
 	var $body = $('body');
 	var photos;
 	var photo;
+	var allPhotos = [];
+	var photosetsLoaded = 0;
+	var numPhotosets = 0;
 	var mainIsFluid = false;//$main.hasClass('contianer-fluid');
 	var scrolling = false;
+	var imageLoadHash = {};
+	var $imageHolder;
 
 	//get user id and kickoff site
 	getUserId("mikedparsons");
@@ -32,37 +39,47 @@
 		$descr.removeClass('loading');
 		$loader.hide();
 	});
-
+	//$loader.hide();
 	// on nav link click
 	$('header').on( mouseEvent, '.nav-item', function() {
 		$('.nav-item').removeClass('selected');
 		var id = $(this).addClass('selected').data('sectionId');
+		console.log('id:',id);
 		if ( id === 'all' ){
-			$('.section').show();
+			$('.thumb').show();
 		} else {
-			var $section = $('#section-'+id);
-			$('.section').hide();
-			$section.show();
+			$('.thumb').hide();
+			$('.thumb[data-photoset-id="'+id+'"').show();
 		}
+		$('body').scrollTop( 0 );
+		$('.navbar-collapse').removeClass('in');
+		$('.nav-item').removeClass('selected');
+
+		var id = $(this).addClass('selected').data('sectionId');
+		console.log('id:',id);
+		$('.section').empty();
+		addPhotos( id === 'all' ? allPhotos : _.where(allPhotos, {photosetId: id}) );
+		initGrid();
 		$('body').scrollTop( 0 );
 		$('.navbar-collapse').removeClass('in');
 	});
 
-	// modal controls position
-	var height = $modalControls.outerHeight();
-	$modalControls.css('top', 'calc(50% - '+height/2+'px)');
-	// modal controls handlers
-	$('.modal .js-next').on( mouseEvent , function() {
-		showFullImage( findNextPhotoFromSet() );
-	});
-	$('.modal .js-prev').on( mouseEvent , function() {
-		showFullImage( findPrevPhotoFromSet() );
-	});
-	$('.modal .js-close').on( mouseEvent , function() {
-		$body.removeClass('modal-shown');
-		$modal.hide();
-		$fullsize.attr( 'src', '' );
-	});
+	$('.thumbs').css('padding-top', $('.main-nav').innerHeight() + 'px');
+	// // modal controls position
+	// var height = $modalControls.outerHeight();
+	// $modalControls.css('top', 'calc(50% - '+height/2+'px)');
+	// // modal controls handlers
+	// $('.modal .js-next').on( mouseEvent , function() {
+	// 	showFullImage( findNextPhotoFromSet() );
+	// });
+	// $('.modal .js-prev').on( mouseEvent , function() {
+	// 	showFullImage( findPrevPhotoFromSet() );
+	// });
+	// $('.modal .js-close').on( mouseEvent , function() {
+	// 	$body.removeClass('modal-shown');
+	// 	$modal.hide();
+	// 	$fullsize.attr( 'src', '' );
+	// });
 
 	// thumbs handler
 	$main.on( mouseEvent, '.thumb', function() {
@@ -73,7 +90,7 @@
 	}).on( 'touchmove', '.thumb', function() {
 		scrolling = true;
 	});
-	
+
 	/*  photo sizes
 	s	small square 75x75
 	q	large square 150x150
@@ -156,34 +173,123 @@
 	function getViewportSize() {
 		return { width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0), height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0) };
 	}
+	function initGrid() {
+		$('.section').justifiedGallery({
+			rowHeight : 300,
+		    lastRow : 'nojustify',
+		    margins : 5,
+		    sizeRangeSuffixes: {
+			    100 : '_t', // used with images which are less than 100px on the longest side
+			    240 : '_m', // used with images which are between 100px and 240px on the longest side
+			    320 : '_n', // ...
+			    500 : '',
+			    640 : '_z',
+			    1024 : '_b' // used which images that are more than 640px on the longest side
+			}
+		});
+	}
+
+	function checkForAllImagesLoaded() {
+		var allLoaded = true;
+		for (var key in imageLoadHash) {
+			allLoaded = false;
+			break;
+		}
+		console.log('--------- allLoaded:',allLoaded);
+		if ( allLoaded) {
+			//initGrid();
+		}
+		return allLoaded;
+	}
+	function addImageLoadHash( id ) {
+		if ( !imageLoadHash[id] ) {
+			imageLoadHash[id] = 'not loaded';
+		}
+		//console.log('addPhotoimageLoadHash, id:',id,', imageLoadHash:',imageLoadHash);
+	}
+	function onPhotoLoad( id, success ) {
+		//console.log('photoResponse, id:',id,', success:',success);
+		if ( imageLoadHash[id] ) {
+			delete imageLoadHash[id];
+			//checkForAllImagesLoaded();
+		}
+	}
 	// when individual photoset is return from flickr
 	function onGetPhotoset(data) {
-		//console.log('onGetPhotoset, data:', data);
+		console.log('onGetPhotoset, data:', data);
 		var photoset = data.photoset;
 		photosets[ photoset.id ].photoset = photoset;
+		photosetsLoaded++;
 		$.each( data.photoset.photo, function (index, photo) {
 			// square thumb url
-			var url = getImgSrc( photo.farm, photo.server, photo.id, photo.secret, 'q');	
+			photo.photosetId = data.photoset.id;
+			allPhotos.push( photo );
+			/*
+			var url = getImgSrc( photo.farm, photo.server, photo.id, photo.secret, 'z');
+			addImageLoadHash( photo.id );
 			var $thumb = $( templates.thumb.concat() )
-				.appendTo( '#section-' + photoset.id +' > ul' )
+				//.appendTo( '#section-' + photoset.id +' > ul' )
+				.attr( {'src': url, 'data-photo-id': photo.id, 'data-photoset-id': data.photoset.id} )
 				.on('error', function() {
-					console.log('image error');
+					onPhotoLoad( $(this).data('photoId'), false );
 				})
-				.attr( {'src': url, 'data-photo-id': photo.id, 'data-photoset-id': data.photoset.id} );
+				.on('load', function() {
+					onPhotoLoad( $(this).data('photoId'), true );
+				})
+
+			var $div = $('<div></div>').append( $thumb );
+			$div.appendTo( '.section > ul');
+			*/
 		});
+		console.log('numPhotosets:',numPhotosets,', photosetsLoaded:',photosetsLoaded,', numPhotosets:',numPhotosets)
+		if ( numPhotosets > 0 && photosetsLoaded === numPhotosets ) {
+			addPhotos( allPhotos );
+			initGrid();
+			// console.log('init grid');
+			// setTimeout( initGrid, 2000 ) ;
+		}
+
+	}
+	function addPhotos( photos ) {
+		_.each( _.shuffle(photos), addPhoto );
+	}
+	function addPhoto( photo ) {
+		//console.log('addPhoto, photo:',photo);
+		var url = getImgSrc( photo.farm, photo.server, photo.id, photo.secret, 'n');
+		//addImageLoadHash( photo.id );
+		var $thumb = $( templates.thumb.concat() )
+			//.appendTo( '#section-' + photoset.id +' > ul' )
+			.on('error', function() {
+				onPhotoLoad( $(this).data('photoId'), false );
+			})
+			.on('load', function() {
+				onPhotoLoad( $(this).parent().data('photoId'), true );
+			})
+			.attr('src', url);
+			//.attr( {'src': url, 'data-photo-id': photo.id, 'data-photoset-id': photo.photosetId } );
+		var $div = $('<div></div>').append( $thumb )
+			.attr( {'data-photo-id': photo.id, 'data-photoset-id': photo.photosetId } );
+		//$('<span class="photo--descr">'+photo.title+'</span>').appendTo( $div );
+		$div.appendTo( '.section');
 	}
 	// when all of a user's photosets are return from flickr
 	function onGetPhotosets(data) {
 		//console.log('onGetPhotosets, data.photosets.photoset:', data.photosets.photoset);
 		var $nav = $('#nav-scroll > .navbar-right');
+		$imageHolder = $( templates.section.concat() ).appendTo( $main );
+		console.log('$imageHolder:',$imageHolder);
+		$nav.append( $('<li><a href="#" class="nav-item" data-section-id="all">all</a></li>') );
 		$.each( data.photosets.photoset, function( index, photoset) {
+			numPhotosets++;
 			photosets[ photoset.id ] = photoset;
 			//add section template and add title
+			/*
 			$( templates.section.concat() )
 				.appendTo( $main )
 				.attr( 'id', 'section-'+this.id )
 				.find('span')
 				.text( this.title._content );
+			*/
 			// add the section nav item
 			$( templates.navitem.concat() )
 				.appendTo( $nav )
@@ -191,7 +297,7 @@
 				.attr( 'data-section-id', this.id )
 				.text( this.title._content );
 			// get photoset for individual photo info
-			getPhotoset(this.id);	
+			getPhotoset(this.id);
 		});
 
 		// click all

@@ -27,7 +27,8 @@ $border-weight: 3px;
 	max-height:270px;
 }
 .spinner {
-	display: inline-block;
+	background-image: none !important;
+	display: none !important;
     $side: 40px;
     box-sizing: border-box;
     @include border-radius( $side );
@@ -91,17 +92,27 @@ body {
 	@include box-shadow( 0 1px 5px 0 rgba(0,0,0,0.5) );
 }
 .section {
-	display:inline;
+	//display:inline;
 }
 main.thumbs {
-	padding: 80px 20px 40px 20px;
-	text-align: center;
+	padding: 0;
+	width: 90%;
+	// padding: 80px 20px 40px 20px;
+	// text-align: center;
+}
+.navbar-toggle {
+	padding:0;
+	margin: 10px 20px 10px 10px;
+}
+.nav-i {
+	color:$blue;
+	font-size:25px;
 }
 .full-size {
     width:auto;
     height:auto;
-    max-width:100%;
-    max-height:100%;
+    max-width:calc(100% - 20px);
+    max-height:calc(100% - 20px);
     margin: auto;
     @include vertical-align();
     display: block;
@@ -110,18 +121,26 @@ main.thumbs {
     }
 }
 .nav > li > a.nav-item {
+	// $lrBord: 1px;
+	// $tbBord: 5px;
+	padding:5px 10px;
+	margin: 5px 10px;
 	box-sizing: border-box;
 	color: $blue;
 	text-transform: uppercase;
-	border-left: 1px solid transparent;
-	border-right: 1px solid transparent;
+	margin: 10px 1px;
+	//@include border-radius(10px);
+	// border-left: $lrBord solid #000;
+	// border-right: $lrBord solid #000;
+	// border-top: $tbBord solid #000;
+	// border-bottom: $tbBord solid #000;
 	&:hover, &:active, &:focus, &.selected {
 		background-color: $blue;
 		color: #000;
-		&:hover {
-			border-left: 1px solid #000;
-			border-right: 1px solid #000;
-		}
+		// &:hover {
+		// 	border-left: 1px solid #000;
+		// 	border-right: 1px solid #000;
+		// }
 
 
 	}
@@ -162,14 +181,15 @@ main.thumbs {
 		}*/
 	}
 }
-.section-photos {
-	margin: 0 0 10px 0;
-	padding: 0;
-	display:inline;
-}
+// .section-photos {
+// 	margin: 0 0 10px 0;
+// 	padding: 0;
+// 	display:inline;
+// }
 .icon-bar {
 	background-color: $blue;
 }
+/*
 .section-header {
 	background-color: #000;
 	text-transform: uppercase;
@@ -204,25 +224,37 @@ main.thumbs {
 		}
 	}
 }
+*/
+/*
 .thumb {
 	padding-bottom: $margin;
 	padding-right: $margin;
-	width: $width;
-	height: $width;
+	width: auto;//$width;
+	height: 200px;//$width;
 	cursor:pointer;
 	box-sizing: border-box;
-	/*
-	&:hover {
-		border: 4px solid $blue;
-		position: relative;
-		z-index: 1000;
-	}
-	*/
+	// &:hover {
+	// 	border: 4px solid $blue;
+	// 	position: relative;
+	// 	z-index: 1000;
+	// }
+}
+*/
+.photo--descr {
+	background-color: rgba(0,0,0,0.8);
+	color: $blue;
+	position: relative;
+	font-weight: 100;
+	font-size: 1.2em;
+	padding: 4px 10px;
+	@include user-select( none );
+	//@include border-radius( 0 0 10px 10px );
 }
 .navbar-fixed-top {
-	background-color: #000;
+	background-color: rgba(0,0,0,0.85);
 	border-bottom: 2px solid $blue;
 	@include box-shadow( 0 1px 5px 0 rgba(0,0,0,0.5) );
+	//@include border-radius( 0 0 40px 40px );
 }
 .email {
 	margin-left: 15px;
