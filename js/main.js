@@ -59,12 +59,13 @@
 		console.log('id:',id);
 		$('.section').empty();
 		addPhotos( id === 'all' ? allPhotos : _.where(allPhotos, {photosetId: id}) );
+
 		initGrid();
 		$('body').scrollTop( 0 );
 		$('.navbar-collapse').removeClass('in');
 	});
 
-	$('.thumbs').css('padding-top', $('.main-nav').innerHeight() + 'px');
+	$('.thumbs').css('padding-top', $('.main-nav').innerHeight() - 4 + 'px');
 	// // modal controls position
 	// var height = $modalControls.outerHeight();
 	// $modalControls.css('top', 'calc(50% - '+height/2+'px)');
@@ -255,7 +256,7 @@
 	}
 	function addPhoto( photo ) {
 		//console.log('addPhoto, photo:',photo);
-		var url = getImgSrc( photo.farm, photo.server, photo.id, photo.secret, 'n');
+		var url = getImgSrc( photo.farm, photo.server, photo.id, photo.secret, 'm');
 		//addImageLoadHash( photo.id );
 		var $thumb = $( templates.thumb.concat() )
 			//.appendTo( '#section-' + photoset.id +' > ul' )

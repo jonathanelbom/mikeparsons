@@ -6,6 +6,7 @@ $width: 150px;
 $cirlce-width: 120px;
 $border-weight: 3px;
 
+//@media
 @-moz-keyframes spin {
   0% { -moz-transform:rotate(0deg); }
   100% { -moz-transform:rotate(360deg); }
@@ -38,16 +39,28 @@ $border-weight: 3px;
     @include animation(spin 0.5s infinite linear);
 }
 
-html, body {
+html {
 	font-family: 'Open Sans', sans-serif;
-	background-color: #111;
+	//background-color: #222;
 	height: 100%;
 	background-attachment: fixed;
-	background-image: url('../img/bg.png');
-	background-repeat: repeat;
-	background-position: center;
+	// background-image: url('../img/bg.png');
+	// background-repeat: repeat;
+	// background-position: center;
+	// background-attachment: fixed;
+	$light: #111;
+	$dark: #000;
+	background-color: #222;
+	background: repeating-linear-gradient(
+	  45deg,
+	  $light,
+	  $light 10px,
+	  $dark 10px,
+	  $dark 20px
+	);
 }
 body {
+	background-color: transparent;
 	&.modal-shown {
 		overflow: hidden;
 	}
