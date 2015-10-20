@@ -6,7 +6,6 @@ $width: 150px;
 $cirlce-width: 120px;
 $border-weight: 3px;
 
-//@media
 @-moz-keyframes spin {
   0% { -moz-transform:rotate(0deg); }
   100% { -moz-transform:rotate(360deg); }
@@ -43,14 +42,13 @@ html {
 	font-family: 'Open Sans', sans-serif;
 	//background-color: #222;
 	height: 100%;
-	background-attachment: fixed;
 	// background-image: url('../img/bg.png');
 	// background-repeat: repeat;
 	// background-position: center;
 	// background-attachment: fixed;
 	$light: #111;
 	$dark: #000;
-	background-color: #222;
+	background-color: #000;
 	background: repeating-linear-gradient(
 	  45deg,
 	  $light,
@@ -58,12 +56,18 @@ html {
 	  $dark 10px,
 	  $dark 20px
 	);
+	background-repeat: no-repeat;
+    background-attachment: fixed;
 }
 body {
+	height: 100%;
 	background-color: transparent;
 	&.modal-shown {
 		overflow: hidden;
 	}
+}
+.navbar-nav {
+	margin: 0 -15px;
 }
 .modal {
 	height: 100%;
@@ -133,31 +137,39 @@ main.thumbs {
     	display:none;
     }
 }
-.nav > li > a.nav-item {
-	// $lrBord: 1px;
-	// $tbBord: 5px;
-	padding:5px 10px;
-	margin: 5px 10px;
-	box-sizing: border-box;
-	color: $blue;
-	text-transform: uppercase;
-	margin: 10px 1px;
-	//@include border-radius(10px);
-	// border-left: $lrBord solid #000;
-	// border-right: $lrBord solid #000;
-	// border-top: $tbBord solid #000;
-	// border-bottom: $tbBord solid #000;
-	&:hover, &:active, &:focus, &.selected {
-		background-color: $blue;
-		color: #000;
-		// &:hover {
-		// 	border-left: 1px solid #000;
-		// 	border-right: 1px solid #000;
-		// }
+.nav > li {
+	> a.nav-item {
+		padding:5px 10px;
+		margin: 10px 1px;
 
-
+		box-sizing: border-box;
+		color: $blue;
+		text-transform: uppercase;
+		@include user-select( none );
+		&:hover, &:active, &:focus, &.selected {
+			background-color: $blue;
+			color: #000;
+		}
 	}
 }
+
+@media (max-width: 767px) {
+ 	.nav > li {
+	 	> a.nav-item {
+			padding:15px 10px;
+			margin: 0;
+		}
+		&:not(:last-child) {
+			> a.nav-item {
+				margin-bottom: 1px;
+			}
+		}
+	}
+	.navbar-nav {
+		border-top: 4px solid $blue;
+	}
+}
+
 .modal-controls {
 	@include box-shadow( 0 1px 5px 0 rgba(0,0,0,0.5) );
 	background-color: $blue;
@@ -194,65 +206,11 @@ main.thumbs {
 		}*/
 	}
 }
-// .section-photos {
-// 	margin: 0 0 10px 0;
-// 	padding: 0;
-// 	display:inline;
-// }
+
 .icon-bar {
 	background-color: $blue;
 }
-/*
-.section-header {
-	background-color: #000;
-	text-transform: uppercase;
-	display: inline-block;
-	padding: 1px 6px;
-	box-sizing: border-box;
-	margin-right: $margin;
-	@include calc( width, '#{$width} - #{$margin}' );
-	@include calc( line-height, '#{$width} - #{$margin}' );
-  	text-align: center;
-	span {
-		position: relative;
-		@include calc( line-height, '#{$width} - #{$margin}*2' );
-		background-color: $blue;
-		display: inline-block;
-		@include border-radius( $cirlce-width );
-		line-height: $cirlce-width;
-		width: $cirlce-width;
-		font-weight: 600;
-		font-size: 16px;
-		letter-spacing: -1px;
 
-		&:after {
-		  @include border-radius( $cirlce-width );
-		  content: '';
-		  position: absolute;
-		  @include calc( width, '#{$cirlce-width} - #{$border-weight} * 2' );
-		  @include calc( height, '#{$cirlce-width} - #{$border-weight} * 2' );
-		  border: $border-weight solid #000;
-		  left: $border-weight;
-		  top: $border-weight;
-		}
-	}
-}
-*/
-/*
-.thumb {
-	padding-bottom: $margin;
-	padding-right: $margin;
-	width: auto;//$width;
-	height: 200px;//$width;
-	cursor:pointer;
-	box-sizing: border-box;
-	// &:hover {
-	// 	border: 4px solid $blue;
-	// 	position: relative;
-	// 	z-index: 1000;
-	// }
-}
-*/
 .photo--descr {
 	background-color: rgba(0,0,0,0.8);
 	color: $blue;
@@ -264,8 +222,8 @@ main.thumbs {
 	//@include border-radius( 0 0 10px 10px );
 }
 .navbar-fixed-top {
-	background-color: rgba(0,0,0,0.85);
-	border-bottom: 2px solid $blue;
+	background-color: rgba(0,0,0,0.9);
+	border-bottom: 4px solid $blue;
 	@include box-shadow( 0 1px 5px 0 rgba(0,0,0,0.5) );
 	//@include border-radius( 0 0 40px 40px );
 }

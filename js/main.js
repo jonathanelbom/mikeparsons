@@ -28,6 +28,7 @@
 	var scrolling = false;
 	var imageLoadHash = {};
 	var $imageHolder;
+	var hasGrid = false;
 
 	//get user id and kickoff site
 	getUserId("mikedparsons");
@@ -175,6 +176,9 @@
 		return { width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0), height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0) };
 	}
 	function initGrid() {
+		if ( hasGrid ) {
+			$('.section').justifiedGallery('destroy');
+		}
 		$('.section').justifiedGallery({
 			rowHeight : 300,
 		    lastRow : 'nojustify',
@@ -188,6 +192,7 @@
 			    1024 : '_b' // used which images that are more than 640px on the longest side
 			}
 		});
+		hasGrid = true;
 	}
 
 	function checkForAllImagesLoaded() {
@@ -196,20 +201,14 @@
 			allLoaded = false;
 			break;
 		}
-		console.log('--------- allLoaded:',allLoaded);
-		if ( allLoaded) {
-			//initGrid();
-		}
 		return allLoaded;
 	}
 	function addImageLoadHash( id ) {
 		if ( !imageLoadHash[id] ) {
 			imageLoadHash[id] = 'not loaded';
 		}
-		//console.log('addPhotoimageLoadHash, id:',id,', imageLoadHash:',imageLoadHash);
 	}
 	function onPhotoLoad( id, success ) {
-		//console.log('photoResponse, id:',id,', success:',success);
 		if ( imageLoadHash[id] ) {
 			delete imageLoadHash[id];
 			//checkForAllImagesLoaded();
@@ -222,32 +221,14 @@
 		photosets[ photoset.id ].photoset = photoset;
 		photosetsLoaded++;
 		$.each( data.photoset.photo, function (index, photo) {
-			// square thumb url
 			photo.photosetId = data.photoset.id;
 			allPhotos.push( photo );
-			/*
-			var url = getImgSrc( photo.farm, photo.server, photo.id, photo.secret, 'z');
-			addImageLoadHash( photo.id );
-			var $thumb = $( templates.thumb.concat() )
-				//.appendTo( '#section-' + photoset.id +' > ul' )
-				.attr( {'src': url, 'data-photo-id': photo.id, 'data-photoset-id': data.photoset.id} )
-				.on('error', function() {
-					onPhotoLoad( $(this).data('photoId'), false );
-				})
-				.on('load', function() {
-					onPhotoLoad( $(this).data('photoId'), true );
-				})
-
-			var $div = $('<div></div>').append( $thumb );
-			$div.appendTo( '.section > ul');
-			*/
 		});
-		console.log('numPhotosets:',numPhotosets,', photosetsLoaded:',photosetsLoaded,', numPhotosets:',numPhotosets)
+		console.log('photosets:',photosets);
 		if ( numPhotosets > 0 && photosetsLoaded === numPhotosets ) {
 			addPhotos( allPhotos );
 			initGrid();
 			// console.log('init grid');
-			// setTimeout( initGrid, 2000 ) ;
 		}
 
 	}
