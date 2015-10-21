@@ -6,28 +6,16 @@ $width: 150px;
 $cirlce-width: 120px;
 $border-weight: 3px;
 
-@-moz-keyframes spin {
-  0% { -moz-transform:rotate(0deg); }
-  100% { -moz-transform:rotate(360deg); }
-}
-@-webkit-keyframes spin {
-  0% { -webkit-transform:rotate(0deg); }
-  100% { -webkit-transform:rotate(360deg); }
-}
-@-ms-keyframes spin {
-  0% { -ms-transform:rotate(0deg); }
-  100% { -ms-transform:rotate(360deg); }
-}
-@keyframes spin {
-  0% { transform:rotate(0deg); }
-  100% { transform:rotate(360deg); }
+spinner {
+	display:none;
 }
 //******************* loader *******************
-.spinner {
+$time: 1.0s;
+.dot-spinner {
   //margin: 100px auto;
   width: 60px;
   height: 60px;
-  position: absolute;
+  position: fixed;
   margin: auto;
   @include calc(top, '50% - 30px');
   @include calc(right, '50% - 30px');
@@ -36,10 +24,9 @@ $border-weight: 3px;
   text-align: center;
   z-index: 1060;
 
-  -webkit-animation: sk-rotate 2.0s infinite linear;
-  animation: sk-rotate 2.0s infinite linear;
+  -webkit-animation: sk-rotate $time infinite linear;
+  animation: sk-rotate $time infinite linear;
 }
-
 .dot1, .dot2 {
   width: 60%;
   height: 60%;
@@ -47,17 +34,19 @@ $border-weight: 3px;
   position: absolute;
   top: 0;
   background-color: $blue;
+  border: 2px solid #000;
   border-radius: 100%;
+  //@include box-shadow(0 4px 4px 0px rgba(0,0,0,0.5) );
 
-  -webkit-animation: sk-bounce 2.0s infinite ease-in-out;
-  animation: sk-bounce 2.0s infinite ease-in-out;
+  -webkit-animation: sk-bounce $time infinite ease-in-out;
+  animation: sk-bounce $time infinite ease-in-out;
 }
 
 .dot2 {
   top: auto;
   bottom: 0;
-  -webkit-animation-delay: -1.0s;
-  animation-delay: -1.0s;
+  -webkit-animation-delay: -$time/2;
+  animation-delay: -$time/2;
 }
 
 @-webkit-keyframes sk-rotate { 100% { -webkit-transform: rotate(360deg) }}
@@ -174,26 +163,11 @@ $border-weight: 3px;
 #nav-scroll.navbar-collapse.in {
 	max-height:270px;
 }
-// .spinner {
-// 	background-image: none !important;
-// 	//display: none !important;
-//     $side: 50px;
-//     box-sizing: border-box;
-//     @include border-radius( $side );
-//     width: $side;
-//     height: $side;
-//     border: 5px outset $blue;//lighten($blue, 30%);
-//     @include animation(spin 0.5s infinite linear);
-// }
 
 html {
 	font-family: 'Open Sans', sans-serif;
 	//background-color: #222;
 	height: 100%;
-	// background-image: url('../img/bg.png');
-	// background-repeat: repeat;
-	// background-position: center;
-	// background-attachment: fixed;
 	$light: #111;
 	$dark: #000;
 	background-color: #000;
@@ -224,51 +198,12 @@ body {
 	visibility: hidden;
 	display: block;
 }
-.descr {
-	pointer-events: none;
-	position: fixed;
-	bottom:0;
-	width: 100%;
-	text-align: center;
-	z-index: 2012;
-	> span {
-		display:inline-block;
-		background-color: #000;//rgba(0,0,0,0.5);
-		color: $blue;
-		padding: 5px;
-		font-size: 16px;
-		font-weight: 300;
-		line-height: 16px
-	}
-	&.loading {
-		display:none;
-	}
-}
-.load-disp {
-	//display: none;
-	text-align: center;
-	$side: 60px;
-	background-color: #000;
-	width: $side;
-	height: $side;
-	@include border-radius( 6px );
-	position:absolute;
-	@include calc( left, '50% - #{$side}/2');
-	@include calc( top, '50% - #{$side}/2');
-	padding-top: 10px;
-	@include box-shadow( 0 1px 5px 0 rgba(0,0,0,0.5) );
-}
-.section {
-	//display:inline;
-}
 .thumb {
 	cursor: pointer;
 }
 main.thumbs {
 	padding: 0;
 	width: 90%;
-	// padding: 80px 20px 40px 20px;
-	// text-align: center;
 }
 .navbar-toggle {
 	padding:0;
@@ -279,10 +214,6 @@ main.thumbs {
 	font-size:25px;
 }
 .full-size {
-    // width:auto;
-    // height:auto;
-    // max-width:calc(100% - 20px);
-    // max-height:calc(100% - 20px);
     width: auto;
     height: auto;
     &.full-width {
@@ -291,12 +222,6 @@ main.thumbs {
     &.full-height {
     	@include calc( height, '100% - 40px');
     }
-    // min-width: 100%;
-    // min-height: 100%;
-    // @include calc( min-width, '100% - 20px');
-    // @include calc( min-height, '100% - 20px');
-    // min-width: (100% - 20px);
-    // min-height: (100% - 20px);
     margin: auto;
     @include vertical-align();
     display: block;
@@ -305,13 +230,35 @@ main.thumbs {
     }
 }
 $triangle-side: 60px;
-$side-adj: 6px;
-$top-adj: 3px;
+$side-adj: 5px;
+$top-adj: 4px;
 $triangle-hover-side: 100px;
 $side-adj-hover: 6px;
 $top-adj-hover: 3px;
-
 $triangle-color: $blue;
+$offset: 5px;
+.descr {
+	pointer-events: none;
+	position: fixed;
+	bottom:0;
+	right: $triangle-side + $offset;
+	@include calc(width, '100% - ' + $triangle-side * 2 + ' - ' + $offset * 2 );
+	text-align: center;
+	//z-index: 2012;
+	> span {
+		display:inline-block;
+		background-color: #000;//rgba(0,0,0,0.5);
+		color: $blue;
+		padding: 5px;
+		font-size: 16px;
+		font-weight: 300;
+		line-height: 16px;
+		word-break: break-all;
+	}
+	&.loading {
+		display:none;
+	}
+}
 .modal--controls {
 	width: 100%;
 	height: 100%;
@@ -331,13 +278,13 @@ $triangle-color: $blue;
 .modal_top {
 	top:0;
 	width:100%;
-	height:30%;
+	height:20%;
 }
 .modal_bl {
 	bottom: 0;
 	left:0;
 	width:50%;
-	height:70%;
+	height:80%;
 	// &:hover {
 	// 	.corner{
 	// 		border-width: $triangle-hover-side 0 0 $triangle-hover-side;
@@ -350,7 +297,6 @@ $triangle-color: $blue;
 	width:50%;
 	height:70%;
 }
-$offset: 4px;
 .triangle-tr {
 	position: absolute;
 	top: $offset;
@@ -361,8 +307,8 @@ $offset: 4px;
 	border-width: 0 $triangle-side $triangle-side 0;
 	border-color: transparent $triangle-color transparent transparent;
 	i {
-		right: - $triangle-side + $side-adj;
-		top: $top-adj;
+		right: - $triangle-side + $side-adj + 2;
+		top: $top-adj - 2px;
 	}
 	// &:hover {
 	// 	border-width: 0 $triangle-hover-side $triangle-hover-side 0;

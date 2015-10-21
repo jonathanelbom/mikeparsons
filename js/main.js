@@ -52,18 +52,6 @@
 		$fullsize.removeClass('full-width full-height');
 		debouncedResize();
 	});
-	function sizeToScreen() {
-		var vp = getViewportSize();
-		var vpRatio = vp.width / vp.height;
-		var width = $fullsize.outerWidth();
-		var height = $fullsize.outerHeight();
-		var picRatio = width / height;
-		if ( picRatio > vpRatio) {
-			$fullsize.addClass('full-width');
-		} else {
-			$fullsize.addClass('full-height');
-		}
-	}
 	//$loader.hide();
 	// on nav link click
 	$('header').on( mouseEvent, '.nav-item', function() {
@@ -86,14 +74,17 @@
 	// modal controls handlers
 	$('.modal .js-next').on( mouseEvent , function() {
 		showFullImage( findNextPhotoFromCurPhotos() );
+		return false;
 	});
 	$('.modal .js-prev').on( mouseEvent , function() {
 		showFullImage( findPrevPhotoFromCurPhotos() );
+		return false;
 	});
 	$('.modal .js-close').on( mouseEvent , function() {
 		$body.removeClass('modal-shown');
 		$modal.hide();
 		$fullsize.attr( 'src', '' );
+		return false;
 	});
 
 	// thumbs handler
@@ -246,8 +237,8 @@
     	    	if ( !_.isBoolean(show) ) {
     		show = !$loader.is(":visible");
     	}
-    	console.log('      show:',show);
-    	show ? $loader.show(500) : $loader.hide(500);
+    	//$loader.show();
+    	show ? $loader.show() : $loader.hide();
     }
 	function checkForAllImagesLoaded() {
 		var allLoaded = true;
@@ -266,6 +257,18 @@
 		if ( imageLoadHash[id] ) {
 			delete imageLoadHash[id];
 			//checkForAllImagesLoaded();
+		}
+	}
+	function sizeToScreen() {
+		var vp = getViewportSize();
+		var vpRatio = vp.width / vp.height;
+		var width = $fullsize.outerWidth();
+		var height = $fullsize.outerHeight();
+		var picRatio = width / height;
+		if ( picRatio > vpRatio) {
+			$fullsize.addClass('full-width');
+		} else {
+			$fullsize.addClass('full-height');
 		}
 	}
 	// when individual photoset is return from flickr
@@ -294,11 +297,9 @@
 		// });
 	}
 	function addPhoto( photo ) {
-		//console.log('addPhoto, photo:',photo);
 		var url = getImgSrc( photo.farm, photo.server, photo.id, photo.secret, 'm');
 		//addImageLoadHash( photo.id );
 		var $thumb = $( templates.thumb.concat() )
-			//.appendTo( '#section-' + photoset.id +' > ul' )
 			.on('error', function() {
 				onPhotoLoad( $(this).data('photoId'), false );
 			})
@@ -306,10 +307,8 @@
 				onPhotoLoad( $(this).parent().data('photoId'), true );
 			})
 			.attr('src', url);
-			//.attr( {'src': url, 'data-photo-id': photo.id, 'data-photoset-id': photo.photosetId } );
 		var $div = $('<div></div>').append( $thumb )
 			.attr( {'data-photo-id': photo.id, 'data-photoset-id': photo.photosetId } );
-		//$('<span class="photo--descr">'+photo.title+'</span>').appendTo( $div );
 		$div.appendTo( '.section');
 	}
 	// when all of a user's photosets are return from flickr
@@ -322,14 +321,6 @@
 		$.each( data.photosets.photoset, function( index, photoset) {
 			numPhotosets++;
 			photosets[ photoset.id ] = photoset;
-			//add section template and add title
-			/*
-			$( templates.section.concat() )
-				.appendTo( $main )
-				.attr( 'id', 'section-'+this.id )
-				.find('span')
-				.text( this.title._content );
-			*/
 			// add the section nav item
 			$( templates.navitem.concat() )
 				.appendTo( $nav )
@@ -349,7 +340,6 @@
 		user_id = data.user.nsid;
 		getPhotosets();
 	}
-
 	function getPhotosets() {
 		$.getJSON(
 			api_url,

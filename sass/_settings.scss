@@ -34,6 +34,10 @@ $blue: #00C7FF;
   -moz-transform-style: preserve-3d;
   transform-style: preserve-3d;
 }
+@mixin box-shadow ($shadow) {
+  -webkit-box-shadow: $shadow;
+  box-shadow: $shadow;
+}
 @mixin animation($animation) {
     -moz-animation:$animation;
     -webkit-animation:$animation;
