@@ -25,7 +25,7 @@
     					<span class="sr-only">Toggle navigation</span>
     					<!-- <i class="fa fa-pencil nav-i"></i>
                         <i class="fa fa-paint-brush nav-i"></i> -->
-                        <i class="fa fa-cubes nav-i"></i>
+                        <i class="fa fa-navicon nav-i"></i>
 					</button>
 					<h1 class="logo">
                         <span>Mike</span><span>Parsons</span>
@@ -43,19 +43,37 @@
 		<!-- Content -->
     	<main class="container-fluid thumbs">
     	</main>
-    	<!-- <div class="modal">
+    	<div class="modal">
             <img class="full-size" src="">
             <div class="descr"><span>sample description text</span></div>
-    		<div class="modal-controls">
-    			<i class="fa fa-arrow-circle-right js-next"></i>
-    			<i class="fa fa-arrow-circle-left js-prev"></i>
-                <hr/>
-    			<i class="fa fa-times-circle js-close"></i>
+    		<div class="modal--controls">
+    		  <div class="modal_pane modal_top js-close">
+                  <div class="corner triangle-tr">
+                      <i class="fa fa-times-circle"></i>
+                  </div>
+              </div>
+              <div class="modal_pane modal_bl js-prev">
+                  <div class="corner triangle-bl">
+                    <i class="fa fa-arrow-circle-left"></i>
+                  </div>
+              </div>
+              <div class="modal_pane modal_br js-next">
+                  <div class="corner triangle-br">
+                      <i class="fa fa-arrow-circle-right"></i>
+                  </div>
+              </div>
     		</div>
-            <div class="loader">
-                <div class="spinner"></div>
-            </div>
-    	</div> -->
+    	</div>
+       <!--  <div class="spinner">
+              <div class="dot1"></div>
+              <div class="dot2"></div>
+            </div> -->
+        <div class="sk-folding-cube js-loader">
+          <div class="sk-cube1 sk-cube"></div>
+          <div class="sk-cube2 sk-cube"></div>
+          <div class="sk-cube4 sk-cube"></div>
+          <div class="sk-cube3 sk-cube"></div>
+        </div>
     	<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
         <script src="libs/justifiedGallery/jquery.justifiedGallery.min.js"></script>
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>

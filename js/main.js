@@ -6,8 +6,6 @@
 	var photosets = {};
 	var photos = {};
 	var templates = {
-		//section: '<section class="section"><header class="section-header"><span></span></header><ul class="section-photos"></ul></section>',
-		//section: '<section class="section"><ul class="section-photos"></ul></section>',
 		section: '<section class="section"></section>',
 		thumb: '<img class="thumb"></img>',
 		navitem: '<li><a href="#" class="nav-item"></a></li>'
@@ -17,11 +15,12 @@
 	var $modalControls = $('.modal-controls');
 	var $fullsize = $('.full-size');
 	var $descr = $('.descr');
-	var $loader = $('.loader');
+	var $loader = $('.js-loader');
 	var $body = $('body');
 	var photos;
 	var photo;
 	var allPhotos = [];
+	var curPhotos = [];
 	var photosetsLoaded = 0;
 	var numPhotosets = 0;
 	var mainIsFluid = false;//$main.hasClass('contianer-fluid');
@@ -29,6 +28,7 @@
 	var imageLoadHash = {};
 	var $imageHolder;
 	var hasGrid = false;
+	var imageTimeoutId;
 
 	//get user id and kickoff site
 	getUserId("mikedparsons");
@@ -36,30 +36,43 @@
 	var mouseEvent = Modernizr.touch ? 'touchend' : 'click';
 	// on full size iamge loaded
 	$fullsize.on('load', function() {
+		if ( imageTimeoutId ) {
+			clearTimeout(imageTimeoutId);
+			imageTimeoutId = null;
+		}
 		$fullsize.removeClass('loading');
 		$descr.removeClass('loading');
-		$loader.hide();
+		toggleLoader(false);
+		sizeToScreen()
 	});
+	var debouncedResize = _.debounce( function() {
+		sizeToScreen();
+	}, 200 );
+	$(window).on('resize', function() {
+		$fullsize.removeClass('full-width full-height');
+		debouncedResize();
+	});
+	function sizeToScreen() {
+		var vp = getViewportSize();
+		var vpRatio = vp.width / vp.height;
+		var width = $fullsize.outerWidth();
+		var height = $fullsize.outerHeight();
+		var picRatio = width / height;
+		if ( picRatio > vpRatio) {
+			$fullsize.addClass('full-width');
+		} else {
+			$fullsize.addClass('full-height');
+		}
+	}
 	//$loader.hide();
 	// on nav link click
 	$('header').on( mouseEvent, '.nav-item', function() {
 		$('.nav-item').removeClass('selected');
 		var id = $(this).addClass('selected').data('sectionId');
-		console.log('id:',id);
-		if ( id === 'all' ){
-			$('.thumb').show();
-		} else {
-			$('.thumb').hide();
-			$('.thumb[data-photoset-id="'+id+'"').show();
-		}
-		$('body').scrollTop( 0 );
-		$('.navbar-collapse').removeClass('in');
-		$('.nav-item').removeClass('selected');
-
-		var id = $(this).addClass('selected').data('sectionId');
-		console.log('id:',id);
 		$('.section').empty();
-		addPhotos( id === 'all' ? allPhotos : _.where(allPhotos, {photosetId: id}) );
+		var photos = id === 'all' ? allPhotos : _.where(allPhotos, {photosetId: id})
+		console.log('photos:',photos);
+		addPhotos( photos );
 
 		initGrid();
 		$('body').scrollTop( 0 );
@@ -67,26 +80,26 @@
 	});
 
 	$('.thumbs').css('padding-top', $('.main-nav').innerHeight() - 4 + 'px');
-	// // modal controls position
-	// var height = $modalControls.outerHeight();
-	// $modalControls.css('top', 'calc(50% - '+height/2+'px)');
-	// // modal controls handlers
-	// $('.modal .js-next').on( mouseEvent , function() {
-	// 	showFullImage( findNextPhotoFromSet() );
-	// });
-	// $('.modal .js-prev').on( mouseEvent , function() {
-	// 	showFullImage( findPrevPhotoFromSet() );
-	// });
-	// $('.modal .js-close').on( mouseEvent , function() {
-	// 	$body.removeClass('modal-shown');
-	// 	$modal.hide();
-	// 	$fullsize.attr( 'src', '' );
-	// });
+	// modal controls position
+	var height = $modalControls.outerHeight();
+	$modalControls.css('top', 'calc(50% - '+height/2+'px)');
+	// modal controls handlers
+	$('.modal .js-next').on( mouseEvent , function() {
+		showFullImage( findNextPhotoFromCurPhotos() );
+	});
+	$('.modal .js-prev').on( mouseEvent , function() {
+		showFullImage( findPrevPhotoFromCurPhotos() );
+	});
+	$('.modal .js-close').on( mouseEvent , function() {
+		$body.removeClass('modal-shown');
+		$modal.hide();
+		$fullsize.attr( 'src', '' );
+	});
 
 	// thumbs handler
 	$main.on( mouseEvent, '.thumb', function() {
 		if ( !scrolling ) {
-			showFullImage( findPhotoFromSet( $(this).data('photoId'), $(this).data('photosetId') ) );
+			showFullImage( findPhotoFromCurPhotos(  $(this).closest('div').data('photoId') ) );
 		}
 		scrolling = false;
 	}).on( 'touchmove', '.thumb', function() {
@@ -138,14 +151,37 @@
 	function showFullImage( photo ) {
 		//console.log('showFullImage, width:',size.width,', height:',size.height,', photo:',photo,', photo.id:',photo.id );
 		var url =  getImgSrc( photo.farm, photo.server, photo.id, photo.secret, getImageSize() );
+		$fullsize.removeClass('full-width full-height')
 		$fullsize.addClass('loading');
 		$descr.addClass('loading').find('span').text( photo.title );
 
-		$loader.show();
+		imageTimeoutId = setTimeout( function() {
+			toggleLoader(true);
+		}, 500);
+
 		$fullsize.attr( 'src', url );
 		$modal.show();
 		$modal.css('visibility', 'visible');
 		$body.addClass('modal-shown');
+	}
+
+	function findPhotoFromCurPhotos( photoId ) {
+		photo = _.findWhere( curPhotos, {id: photoId.toString()} );
+		return photo;
+	}
+
+	function findNextPhotoFromCurPhotos() {
+		var idx = curPhotos.indexOf( photo );
+		idx = idx === curPhotos.length - 1 ? 0 : idx + 1;
+		photo = curPhotos[ idx ];
+		return photo;
+	}
+
+	function findPrevPhotoFromCurPhotos() {
+		var idx = curPhotos.indexOf( photo );
+		idx = idx ===  0 ? curPhotos.length - 1 : idx - 1;
+		photo = curPhotos[ idx ];
+		return photo;
 	}
 
 	function findPhotoFromSet( photoId, photosetId ) {
@@ -178,6 +214,7 @@
 	function initGrid() {
 		if ( hasGrid ) {
 			$('.section').justifiedGallery('destroy');
+			$('.section').justifiedGallery().off();
 		}
 		$('.section').justifiedGallery({
 			rowHeight : 300,
@@ -192,9 +229,26 @@
 			    1024 : '_b' // used which images that are more than 640px on the longest side
 			}
 		});
+		$('.section').justifiedGallery().on('jg.complete', function (e) {
+		    toggleLoader(false);
+		    $(document).scrollTop( 0 );
+		});
 		hasGrid = true;
 	}
-
+	function getViewportSize () {
+        return {
+        	width: Math.max(document.documentElement.clientWidth, window.innerWidth || 0),
+        	height: Math.max(document.documentElement.clientHeight, window.innerHeight || 0)
+        };
+    }
+    function toggleLoader( show ) {
+    	console.log('toggleLoader, show:',show);
+    	    	if ( !_.isBoolean(show) ) {
+    		show = !$loader.is(":visible");
+    	}
+    	console.log('      show:',show);
+    	show ? $loader.show(500) : $loader.hide(500);
+    }
 	function checkForAllImagesLoaded() {
 		var allLoaded = true;
 		for (var key in imageLoadHash) {
@@ -216,7 +270,7 @@
 	}
 	// when individual photoset is return from flickr
 	function onGetPhotoset(data) {
-		console.log('onGetPhotoset, data:', data);
+		//console.log('onGetPhotoset, data:', data);
 		var photoset = data.photoset;
 		photosets[ photoset.id ].photoset = photoset;
 		photosetsLoaded++;
@@ -224,7 +278,7 @@
 			photo.photosetId = data.photoset.id;
 			allPhotos.push( photo );
 		});
-		console.log('photosets:',photosets);
+		//console.log('photosets:',photosets);
 		if ( numPhotosets > 0 && photosetsLoaded === numPhotosets ) {
 			addPhotos( allPhotos );
 			initGrid();
@@ -233,7 +287,11 @@
 
 	}
 	function addPhotos( photos ) {
-		_.each( _.shuffle(photos), addPhoto );
+		curPhotos = _.shuffle(photos);
+		_.each( curPhotos, addPhoto );
+		// $('.section').on('click', '.thumb', function() {
+		// 	var photo = curPhotos.findWhere({});
+		// });
 	}
 	function addPhoto( photo ) {
 		//console.log('addPhoto, photo:',photo);
