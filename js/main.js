@@ -17,6 +17,7 @@
 	var $descr = $('.descr');
 	var $loader = $('.js-loader');
 	var $body = $('body');
+	var $shell = $('.nav-shell');
 	var photos;
 	var photo;
 	var allPhotos = [];
@@ -29,6 +30,7 @@
 	var $imageHolder;
 	var hasGrid = false;
 	var imageTimeoutId;
+	var menuShrunk = false;
 	var isMobile = false; //initiate as false
 	// device detection
 	if ( /(android|bb\d+|meego).+mobile|avantgo|bada\/|blackberry|blazer|compal|elaine|fennec|hiptop|iemobile|ip(hone|od)|ipad|iris|kindle|Android|Silk|lge |maemo|midp|mmp|netfront|opera m(ob|in)i|palm( os)?|phone|p(ixi|re)\/|plucker|pocket|psp|series(4|6)0|symbian|treo|up\.(browser|link)|vodafone|wap|windows (ce|phone)|xda|xiino/i.test(navigator.userAgent)
@@ -60,6 +62,19 @@
 		$fullsize.removeClass('full-width full-height');
 		debouncedResize();
 	})
+	$(window).on('scroll', function() {
+		console.log('scroll, $(this).scrollTop():',$(this).scrollTop());
+		var threshhold = 170;
+		var shrink =  $(this).scrollTop() > threshhold && !menuShrunk;
+		var grow = $(this).scrollTop() <= threshhold && menuShrunk;
+		if ( shrink ) {
+			$shell.addClass('shrunk');
+			menuShrunk = true;
+		} else if ( grow ) {
+			$shell.removeClass('shrunk');
+			menuShrunk = false;
+		}
+	})
 	if ( isMobile ) {
 		$(window).on('orientationchange', function() {
 			updateRowHeight();
@@ -81,7 +96,7 @@
 		$('.navbar-collapse').removeClass('in');
 	});
 
-	$('.thumbs').css('padding-top', $('.main-nav').outerHeight() - 1 + 'px');
+	$('.thumbs').css('padding-top', $('.main-nav').outerHeight() + 15 + 'px');
 	// modal controls position
 	var height = $modalControls.outerHeight();
 	$modalControls.css('top', 'calc(50% - '+height/2+'px)');
@@ -224,7 +239,7 @@
 		$('.section').justifiedGallery({
 			rowHeight : getRowHeight(), //300,
 		    lastRow : 'nojustify',
-		    margins : 5,
+		    margins : 15,
 		    sizeRangeSuffixes: {
 			    100 : '_t', // used with images which are less than 100px on the longest side
 			    240 : '_m', // used with images which are between 100px and 240px on the longest side
