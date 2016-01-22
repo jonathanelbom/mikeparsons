@@ -5,6 +5,8 @@ $margin: 2px;
 $width: 150px;
 $cirlce-width: 120px;
 $border-weight: 3px;
+$top-full-margins: 40px;
+$top-shrunk-margins: 5px;
 
 spinner {
 	display:none;
@@ -366,20 +368,80 @@ $offset: 5px;
 }
 .navbar-header {
 	padding-top:3px;
-	padding-bottom:9px;
+	padding-bottom:5px;
+}
+.navbar-toggle {
+	margin-bottom: 0px;
 }
 .nav-shell {
-	padding: 40px 15px;
-	transition: 0.35s padding ease;
+	ul.navbar-nav,  .navbar-header {
+		transition: margin 0.35s ease;
+		margin-top: 35px;
+		margin-bottom: 45px;
+	}
 	&.shrunk {
-		padding: 5px 15px;
+		ul.navbar-nav,  .navbar-header {
+			margin-top: 0px;
+			margin-bottom: 5px;
+		}
 	}
 }
+#nav-scroll {
+	&.in, &.collapsing {
+		ul.navbar-nav {
+			margin-top: 0px;
+			margin-bottom: 0px;
+		}
+	}
+}
+.nav-shell {
+	// padding: 40px 15px;
+	// transition: 0.35s padding ease;
+	// &.shrunk {
+	// 	padding: 5px 15px;
+	// }
+}
+.logo {
+	margin: 5px 0 0 0;
+	font-weight: 800;
+	font-size:30px;
+	line-height:30px;
+	letter-spacing: -2px;
+	display:inline-block;
+	span {
+		vertical-align: middle;
+	}
+	span:first-child {
+		color: #ccc;
+	}
+	span:last-child {
+		color: $blue;
+	}
+}
+.container>.navbar-header {
+    margin-right: 0;
+    margin-left: 0;
+}
+
 @media (max-width: 767px) {
+ // 	.nav-shell, .nav-shell.shrunk {
+	// 	padding-left: 25px;
+	// 	padding-right: 25px;
+	// }
+ 	.logo {
+	    margin-left: 10px;
+	  }
  	.nav > li {
 	 	> a.nav-item {
 			padding:15px 10px;
 			margin: 0;
+			transition: background-color 0.35s ease;
+			&:hover, &.selected {
+				background-color: $blue;
+				color: #000;
+				border-color: transparent;
+			}
+
 		}
 		&:not(:last-child) {
 			> a.nav-item {
@@ -388,7 +450,7 @@ $offset: 5px;
 		}
 	}
 	.navbar-nav {
-		border-top: 4px solid $blue;
+		border-top: 1px solid $blue;
 	}
 }
 
@@ -419,31 +481,8 @@ $offset: 5px;
 	position:relative;
 	top: 3px;
 	cursor:pointer;
-	color: #444;
+	color: #777;
 	&:hover {
 		color: $blue;
 	}
-}
-.logo {
-	margin: 5px 0 0 0;
-	font-weight: 800;
-	font-size:30px;
-	line-height:30px;
-	letter-spacing: -2px;
-	display:inline-block;
-	span {
-		vertical-align: middle;
-	}
-	span:first-child {
-		color: #ccc;
-	}
-	span:last-child {
-		color: $blue;
-	}
-}
-
-@media (max-width: 767px) {
-  .logo {
-    margin-left: 10px;
-  }
 }
