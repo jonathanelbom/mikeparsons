@@ -48,6 +48,7 @@
 			imageTimeoutId = null;
 		}
 		$fullsize.removeClass('loading');
+		$fullsize.addClass('loaded');
 		$descr.removeClass('loading');
 		toggleLoader(false);
 		sizeToScreen()
@@ -63,7 +64,7 @@
 		debouncedResize();
 	})
 	$(window).on('scroll', function() {
-		console.log('scroll, $(this).scrollTop():',$(this).scrollTop());
+		//console.log('scroll, $(this).scrollTop():',$(this).scrollTop());
 		var threshhold = 170;
 		var shrink =  $(this).scrollTop() > threshhold && !menuShrunk;
 		var grow = $(this).scrollTop() <= threshhold && menuShrunk;
@@ -100,21 +101,7 @@
 	// modal controls position
 	var height = $modalControls.outerHeight();
 	$modalControls.css('top', 'calc(50% - '+height/2+'px)');
-	// modal controls handlers
-	$('.modal .js-next').on( mouseEvent , function() {
-		showFullImage( findNextPhotoFromCurPhotos() );
-		return false;
-	});
-	$('.modal .js-prev').on( mouseEvent , function() {
-		showFullImage( findPrevPhotoFromCurPhotos() );
-		return false;
-	});
-	$('.modal .js-close').on( mouseEvent , function() {
-		$body.removeClass('modal-shown');
-		$modal.hide();
-		$fullsize.attr( 'src', '' );
-		return false;
-	});
+	
 
 	// thumbs handler
 	$main.on( mouseEvent, '.thumb', function() {
@@ -168,21 +155,54 @@
 		return size;
 	}
 
+	$('.modal').on('webkitTransitionEnd transitionend msTransitionEnd oTransitionEnd', function() {
+		var $this = $(this);
+		var opacity = parseInt( $this.css('opacity'), 10);
+		if ( opacity === 0 ) {
+			$this.removeClass('showing-hiding');
+		}
+		toggleModalHandler( opacity === 1 );
+	})
+
+	function toggleModalHandler( enable ) {
+		$('.modal .js-next').off();
+		$('.modal .js-prev').off();
+		$('.modal .js-close').off();
+		if ( enable ) {
+			$('.modal .js-next').on( mouseEvent , function() {
+				showFullImage( findNextPhotoFromCurPhotos() );
+				return false;
+			});
+			$('.modal .js-prev').on( mouseEvent , function() {
+				showFullImage( findPrevPhotoFromCurPhotos() );
+				return false;
+			});
+			$('.modal .js-close').on( mouseEvent , function() {
+				$body.removeClass('modal-shown');
+				$modal.removeClass('shown');
+				$fullsize.attr( 'src', '' );
+				return false;
+			});
+		}
+	}
 	function showFullImage( photo ) {
 		//console.log('showFullImage, width:',size.width,', height:',size.height,', photo:',photo,', photo.id:',photo.id );
 		var url =  getImgSrc( photo.farm, photo.server, photo.id, photo.secret, getImageSize() );
-		$fullsize.removeClass('full-width full-height')
-		$fullsize.addClass('loading');
-		$descr.addClass('loading').find('span').text( photo.title );
-
+		$fullsize.removeClass('full-width full-height loaded')
 		imageTimeoutId = setTimeout( function() {
 			toggleLoader(true);
 		}, 500);
 
 		$fullsize.attr( 'src', url );
-		$modal.show();
-		$modal.css('visibility', 'visible');
+		//$modal.show();
+		//$modal.css('visibility', 'visible');
+		//$modal.css('display', 'block');
+		//$this.show();
 		$body.addClass('modal-shown');
+		$modal.addClass('shown showing-hiding');
+		$fullsize.addClass('loading');
+		$descr.addClass('loading').find('span').text( photo.title );
+
 	}
 
 	function findPhotoFromCurPhotos( photoId ) {
